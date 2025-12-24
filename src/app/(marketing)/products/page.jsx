@@ -8,6 +8,8 @@ export const metadata = {
     title:"Products"
 };
 
+export const dynamic = "force-dynamic";
+
 async function Products({ searchParams }) 
 {
     // Connect database
