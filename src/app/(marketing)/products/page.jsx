@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Suspense } from 'react';
 import AddProduct from './AddProduct';
 import { connectDB } from '@/database/connection';
 import Product from '@/models/products';
@@ -42,16 +42,20 @@ async function Products({ searchParams })
             <div className="container-fluid mt-5">
                 <div className="row mb-3">
                     <div className="col-md-12">
-                        <AddProduct />
+                        <Suspense fallback={ <h2> Loading Add product </h2> }>
+                            <AddProduct />
+                        </Suspense>
                     </div>
                 </div>
                 <div className="row mb-1">
                     <div className="col-md-12">
-                        <ProductsTable 
-                        pagingCounter={products.pagingCounter}
-                        data={docs} 
-                        total={products.totalDocs} 
-                        limit={products.limit} />
+                        <Suspense fallback={ <h2> Loading products table... </h2> }>
+                            <ProductsTable 
+                            pagingCounter={products.pagingCounter}
+                            data={docs} 
+                            total={products.totalDocs} 
+                            limit={products.limit} />
+                        </Suspense>
                     </div>
                 </div>
             </div>
