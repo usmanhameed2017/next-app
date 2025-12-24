@@ -13,13 +13,13 @@ export function proxy(request)
     const protectedPages = ["/users", "/products"];
 
     // Protect API Routes
-    if(protectedRoutes.some(route => pathname?.startsWith(route)))
-    {
-        // Get access token and verify
-        const accessToken = getAccessToken(request);
-        const user = verifyAccessToken(accessToken);
-        if(!user) return NextResponse.json(new ApiError(401, "Unauthorized"), { status:401 });       
-    }
+    // if(protectedRoutes.some(route => pathname?.startsWith(route)))
+    // {
+    //     // Get access token and verify
+    //     const accessToken = getAccessToken(request);
+    //     const user = verifyAccessToken(accessToken);
+    //     if(!user) return NextResponse.json(new ApiError(401, "Unauthorized"), { status:401 });       
+    // }
 
     // Protect Pages
     if(protectedPages.some(page => pathname?.startsWith(page)))
