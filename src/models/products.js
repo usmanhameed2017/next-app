@@ -10,6 +10,9 @@ const productSchema = new Schema({
 // Inject plugin
 productSchema.plugin(mongoosePaginate);
 
+// Enable index
+productSchema.index({ createdAt:-1 });
+
 // Model Reference
 const Product = models.Product || model("Product", productSchema);
 
