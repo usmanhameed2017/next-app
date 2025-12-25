@@ -1,7 +1,5 @@
 import React, { Suspense } from 'react';
 import AddProduct from './AddProduct';
-import { connectDB } from '@/database/connection';
-import Product from '@/models/products';
 import ProductsTable from './ProductsTable';
 
 export const metadata = {
@@ -21,7 +19,9 @@ async function Products()
                 </div>
                 <div className="row mb-1">
                     <div className="col-md-12">
-                        <ProductsTable />
+                        <Suspense fallback={ <div> Loading products... </div> }>
+                            <ProductsTable />
+                        </Suspense>
                     </div>
                 </div>
             </div>
