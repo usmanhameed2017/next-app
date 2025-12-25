@@ -1,9 +1,30 @@
 "use client";
 import ReactDataTable from '@/components/DataTable';
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 
-function ProductsTable({ pagingCounter, data, total, limit }) 
+function ProductsTable() 
 {
+    // States
+    const [data, setData] = useState({ docs: [], totalDocs: 0, pagingCounter: 1 });
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit, setLimit] = useState(10);  
+    const [search, setSearch] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
+
+    // Debounce technique
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearch(search);
+            setCurrentPage(1);
+        }, 500);
+        return () => clearTimeout(timer);
+    }, [search]); 
+
+    // Fetch data on page load and on search
+    useEffect(() => {
+        
+    }, [currentPage, limit, debouncedSearch]);    
+
     // Columns
     const columns = [
         { name: "SR.NO", cell: (row, index) => (pagingCounter || 0) + index, sortable: true, width: "120px" },
@@ -15,11 +36,15 @@ function ProductsTable({ pagingCounter, data, total, limit })
         <>
             <ReactDataTable
             title={`Products`}
-            entity={`products`}
             columns={columns}
-            data={data}
-            total={total}
-            limit={limit} />
+            docs={data}
+            totalDocs={total}
+            setCurrentPage={setCurrentPage}
+            limit={limit} 
+            setLimit={setLimit}
+            search={search}
+            setSearch={setSearch}
+            />
         </>
     );
 }

@@ -2,13 +2,19 @@
 import DataTable, { createTheme } from "react-data-table-component";
 import styles from "./style.module.css";
 import { Row, Col } from 'react-bootstrap';
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 
-function ReactDataTable({ title, entity, columns, data, total, limit }) 
+function ReactDataTable({ title, columns, docs, totalDocs, setCurrentPage, limit, setLimit, search, setSearch }) 
 {
-    // State
-    const [debouncedSearch, setDebouncedSearch] = useState("");
+    // Handle page change
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+    };
+
+    // Handle per row change
+    const handlePerRowsChange = (newLimit, page) => {
+        setLimit(newLimit);
+        setCurrentPage(page);
+    };
 
     // Data table theme
     createTheme("next", {
@@ -40,32 +46,13 @@ function ReactDataTable({ title, entity, columns, data, total, limit })
         }
     };
 
-    // Router instance
-    const router = useRouter();
-
-    // Handle page change
-    const handlePageChange = (page) => router.push(`/${entity}?page=${page}&limit=${limit}`);
-
-    // Handle per row limit change
-    const handlePerRowsChange = (newLimit, page) => router.push(`/${entity}?page=${page}&limit=${newLimit}`);
-
-    // Handle Search
-    const handleSearch = (e) => setDebouncedSearch(e.target.value);
-
-    useEffect(() => {
-       const timeout = setTimeout(() => {
-            router.push(`/${entity}?page=1&limit=3&search=${debouncedSearch}`);
-        }, 400);   
-        return () => clearTimeout(timeout);
-    },[debouncedSearch]);
-
     return (
         <>
             {/* Search Field */}
             <Row>
                 <Col xl="2" lg="4" md="6" sm="12" xs="12" className='ms-auto'>
                     <input type="search" placeholder="Search" className="form-control"
-                    onChange={handleSearch} />
+                    value={search} onChange={ (e) => setSearch(e.target.value) } />
                 </Col>
             </Row>
             
@@ -78,12 +65,12 @@ function ReactDataTable({ title, entity, columns, data, total, limit })
                         theme="next"
                         customStyles={customStyles}
                         columns={columns}
-                        data={data}
+                        data={docs}
                         pagination
                         paginationServer
                         paginationPerPage={limit}
                         paginationRowsPerPageOptions={[3, 25, 50, 100]}
-                        paginationTotalRows={total}
+                        paginationTotalRows={totalDocs}
                         paginationDefaultPage={1}
                         onChangePage={handlePageChange}
                         onChangeRowsPerPage={handlePerRowsChange}
