@@ -1,6 +1,6 @@
 "use client";
 import ReactDataTable from '@/components/DataTable';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { api } from '@/constants';
 
 function ProductsTable() 
@@ -31,11 +31,23 @@ function ProductsTable()
     console.log("My data:", data.docs);    
 
     // Columns
-    const columns = [
-        { name: "SR.NO", cell: (row, index) => (data.pagingCounter || 0) + index, sortable: true, width: "120px" },
-        { name: "Product Name", selector: row => row.name, sortable: true },
-        { name: "Product Price", selector: row => row.price }
-    ]; 
+    const columns = useMemo(() => [
+        {
+            name: "SR.NO",
+            cell: (row, index) => (data.pagingCounter || 0) + index,
+            sortable: true,
+            width: "120px",
+        },
+        {
+            name: "Product Name",
+            selector: row => row.name,
+            sortable: true,
+        },
+        {
+            name: "Product Price",
+            selector: row => row.price,
+        }
+    ], [data.pagingCounter]);
 
     return (
         <>
