@@ -69,7 +69,7 @@ function ReactDataTable({ title, columns, docs, totalDocs, setCurrentPage, limit
                         pagination
                         paginationServer
                         paginationPerPage={limit}
-                        paginationRowsPerPageOptions={[3, 25, 50, 100]}
+                        paginationRowsPerPageOptions={[3, 10, 25, 50, 100]}
                         paginationTotalRows={totalDocs}
                         paginationDefaultPage={1}
                         onChangePage={handlePageChange}

@@ -8,7 +8,7 @@ function ProductsTable()
     // States
     const [data, setData] = useState({ docs: [], totalDocs: 0, pagingCounter: 1 });
     const [currentPage, setCurrentPage] = useState(1);
-    const [limit, setLimit] = useState(10);  
+    const [limit, setLimit] = useState(3);  
     const [search, setSearch] = useState("");
     const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -21,14 +21,14 @@ function ProductsTable()
         return () => clearTimeout(timer);
     }, [search]); 
 
-    console.log("My data:", data);
-
     // Fetch data on page load and on search
     useEffect(() => {
         api.get(`/products?page=${currentPage}&limit=${limit}&search=${search}`)
-        .then(response => setData(response.data))
+        .then(response => setData(response.data.data))
         .catch(error => console.log(error.message));
-    }, [currentPage, limit, debouncedSearch]);    
+    }, [currentPage, limit, debouncedSearch]); 
+    
+    console.log("My data:", data.docs);    
 
     // Columns
     const columns = [
