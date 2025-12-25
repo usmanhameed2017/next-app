@@ -21,7 +21,7 @@ async function Products()
                 </div>
                 <div className="row mb-1">
                     <div className="col-md-12">
-                        {/* <ProductsTable /> */}
+                        <ProductsTable />
                     </div>
                 </div>
             </div>
