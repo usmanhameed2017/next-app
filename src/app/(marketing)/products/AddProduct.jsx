@@ -1,8 +1,7 @@
 "use client";
-import { addProduct } from '@/actions/products';
 import ModalBS from '@/components/Modal';
 import { showSuccess } from '@/utils/toasterMessage';
-import React, { useActionState, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 function AddProduct() 
 {
@@ -10,24 +9,16 @@ function AddProduct()
     const [show, setShow] = useState(false);
     const handleShow = () => setShow(true);
     const handleClose = () => setShow(false);
+    const [name, setName] = useState("");
+    const [price, setPrice] = useState(0);
 
-    // Initial State
-    const initialState = {
-        success:false,
-        errors:{}
+    // Handle submit
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        console.log(name);
+        console.log(price);
     };
 
-    // Action state
-    const [state, formAction, pending] = useActionState(addProduct, initialState);
-
-    useEffect(() => {
-        if(state.success) 
-        {
-            showSuccess("Product added");
-            handleClose();
-            state.success = false;
-        }
-    }, [state.success]);
     return (
         <>
             <div className="container-fluid mt-5">
@@ -39,24 +30,24 @@ function AddProduct()
             </div>
 
             <ModalBS show={show} handleClose={handleClose} title={`Add Product`}>
-                <form action={formAction}>
+                <form onSubmit={handleSubmit}>
                     {/* Name */}
                     <div className="form-group">
                         <label htmlFor="name"> Product Name </label>
-                        <input type="text" name='name' className='form-control' placeholder='Enter Product Name' />
-                        { state.errors.name && <span className='text-danger mt-1'> *{ state.errors.name } </span> }
+                        <input type="text" name='name' className='form-control' placeholder='Enter Product Name'
+                        value={name} onChange={ (e) => setName(e.target.value) } />
                     </div>
 
                     {/* Price */}
                     <div className="form-group">
-                        <label htmlFor="name"> Product Price </label>
-                        <input type="number" name='price' className='form-control' placeholder='Enter Product Price' />
-                        { state.errors.price && <span className='text-danger mt-1'> *{ state.errors.price } </span> }
+                        <label htmlFor="price"> Product Price </label>
+                        <input type="number" name='price' className='form-control' placeholder='Enter Product Price'
+                        value={price} onChange={ (e) => setPrice(e.target.value) } />
                     </div>  
 
                     {/* Save */}
                     <div className="form-group d-flex gap-2">
-                        <button type='submit' className='btn btn-info' disabled={pending}> Save </button>
+                        <button type='submit' className='btn btn-info'> Save </button>
                         <button type='button' className='btn btn-danger' onClick={handleClose}> Cancel </button>
                     </div>
                 </form>
