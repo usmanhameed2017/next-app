@@ -1,6 +1,6 @@
 import React from 'react';
 
-export const revalidate = 30;
+export const revalidate = 10;
 
 async function Home() 
 {
