@@ -1,6 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from 'react';
-import Animation from '@/components/Animation';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import api from '@/service/axios';
 import ReactDataTable from '@/components/DataTable';
 import ModalBS from '@/components/Modal';
@@ -8,23 +7,29 @@ import ModalBS from '@/components/Modal';
 function Products() 
 {
     // States   
-    const [show, setShow] = useState(false);
-    const handleShow = () => setShow(true);
-    const handleClose = () => setShow(false);
-    const [name, setName] = useState("");
-    const [price, setPrice] = useState(0); 
     const [data, setData] = useState({ docs: [], totalDocs: 0, pagingCounter: 1 });
     const [currentPage, setCurrentPage] = useState(1);
     const [limit, setLimit] = useState(3);  
     const [search, setSearch] = useState("");
-    const [debouncedSearch, setDebouncedSearch] = useState("");        
+    const [debouncedSearch, setDebouncedSearch] = useState("");     
+    const [loading, setLoading] = useState(false);  
+    const [show, setShow] = useState(false);
+    const handleShow = () => setShow(true);
+    const handleClose = () => setShow(false);
 
-    // Handle submit
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        console.log(name);
-        console.log(price);
-    };
+    // Fetch
+    const fetchData = useCallback(async () => {
+        try
+        {
+            const response = await api.get({ url:`/products?page=${currentPage}&limit=${limit}&search=${debouncedSearch}` });
+            setData(response.data);
+        }
+        catch(error)
+        {
+            onsole.log(error.message);
+            setData({ docs: [], totalDocs: 0, pagingCounter: 1 });
+        }      
+    },[currentPage, limit, debouncedSearch]);
 
     // Debounce technique
     useEffect(() => {
@@ -37,31 +42,36 @@ function Products()
 
     // Fetch data on page load and on search
     useEffect(() => {
-        api.get({ url:`/products?page=${currentPage}&limit=${limit}&search=${debouncedSearch}` })
-        .then(response => setData(response.data))
-        .catch(error => {
+        fetchData();
+    }, [fetchData]);
+
+    // Handle submit
+    const handleSubmit = useCallback(async(formData) => {
+        setLoading(true);
+        try 
+        {
+            const name = formData.get("name");
+            const price = formData.get("price");
+
+            await api.post({ url:"/products", payload:{ name, price } });
+            handleClose();
+            fetchData();
+        } 
+        catch(error) 
+        {
             console.log(error.message);
-            setData({ docs: [], totalDocs: 0, pagingCounter: 1 });
-        })
-    }, [currentPage, limit, debouncedSearch]);    
+        }
+        finally
+        {
+            setLoading(false);
+        }
+    });    
 
     // Columns
     const columns = useMemo(() => [
-        {
-            name: "SR.NO",
-            cell: (row, index) => (data.pagingCounter || 0) + index,
-            sortable: true,
-            width: "120px",
-        },
-        {
-            name: "Product Name",
-            selector: row => row.name,
-            sortable: true,
-        },
-        {
-            name: "Product Price",
-            selector: row => row.price,
-        }
+        { name: "SR.NO", cell: (row, index) => (data.pagingCounter || 0) + index, sortable: true, width: "120px" },
+        { name: "Product Name", selector: row => row.name, sortable: true },
+        { name: "Product Price", selector: row => row.price }
     ], [data.pagingCounter]);    
 
     return (
@@ -92,24 +102,22 @@ function Products()
 
             {/* Add Modal */}
             <ModalBS show={show} handleClose={handleClose} title={`Add Product`}>
-                <form onSubmit={handleSubmit}>
+                <form action={handleSubmit}>
                     {/* Name */}
                     <div className="form-group">
                         <label htmlFor="name"> Product Name </label>
-                        <input type="text" name='name' className='form-control' placeholder='Enter Product Name'
-                        value={name} onChange={ (e) => setName(e.target.value) } />
+                        <input type="text" name='name' className='form-control' placeholder='Enter Product Name' />
                     </div>
 
                     {/* Price */}
                     <div className="form-group">
                         <label htmlFor="price"> Product Price </label>
-                        <input type="number" name='price' className='form-control' placeholder='Enter Product Price'
-                        value={price} onChange={ (e) => setPrice(e.target.value) } />
+                        <input type="number" name='price' className='form-control' placeholder='Enter Product Price' />
                     </div>  
 
                     {/* Save */}
                     <div className="form-group d-flex gap-2">
-                        <button type='submit' className='btn btn-info'> Save </button>
+                        <button type='submit' className='btn btn-info' disabled={loading}> Save </button>
                         <button type='button' className='btn btn-danger' onClick={handleClose}> Cancel </button>
                     </div>
                 </form>
