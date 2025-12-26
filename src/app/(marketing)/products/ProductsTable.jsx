@@ -1,7 +1,7 @@
 "use client";
 import ReactDataTable from '@/components/DataTable';
+import api from '@/service/axios';
 import React, { useEffect, useMemo, useState } from 'react';
-import { api } from '@/constants';
 
 function ProductsTable() 
 {
@@ -23,12 +23,13 @@ function ProductsTable()
 
     // Fetch data on page load and on search
     useEffect(() => {
-        api.get(`/products?page=${currentPage}&limit=${limit}&search=${search}`)
-        .then(response => setData(response.data.data))
-        .catch(error => console.log(error.message));
-    }, [currentPage, limit, debouncedSearch]); 
-    
-    console.log("My data:", data.docs);    
+        api.get({ url:`/products?page=${currentPage}&limit=${limit}&search=${debouncedSearch}` })
+        .then(response => setData(response.data))
+        .catch(error => {
+            console.log(error.message);
+            setData({ docs: [], totalDocs: 0, pagingCounter: 1 });
+        })
+    }, [currentPage, limit, debouncedSearch]);    
 
     // Columns
     const columns = useMemo(() => [

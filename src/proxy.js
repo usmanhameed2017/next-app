@@ -22,13 +22,13 @@ export function proxy(request)
     // }
 
     // Protect Pages
-    if(protectedPages.some(page => pathname?.startsWith(page)))
-    {
-        // Get access token and verify
-        const accessToken = getAccessToken(request);
-        const user = verifyAccessToken(accessToken);
-        if(!user) return NextResponse.redirect(new URL("/", request.url));       
-    }
+    // if(protectedPages.some(page => pathname?.startsWith(page)))
+    // {
+    //     // Get access token and verify
+    //     const accessToken = getAccessToken(request);
+    //     const user = verifyAccessToken(accessToken);
+    //     if(!user) return NextResponse.redirect(new URL("/", request.url));       
+    // }
 
     // Allow access
     return NextResponse.next();
