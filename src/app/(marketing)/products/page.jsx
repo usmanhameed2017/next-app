@@ -1,7 +1,8 @@
 "use client";
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, lazy, Suspense } from 'react';
 import api from '@/service/axios';
-import ReactDataTable from '@/components/DataTable';
+// import ReactDataTable from '@/components/DataTable';
+const ReactDataTable = lazy(() => import('@/components/DataTable'));
 import ModalBS from '@/components/Modal';
 
 function Products() 
@@ -26,7 +27,7 @@ function Products()
         }
         catch(error)
         {
-            onsole.log(error.message);
+            console.log(error.message);
             setData({ docs: [], totalDocs: 0, pagingCounter: 1 });
         }      
     },[currentPage, limit, debouncedSearch]);
@@ -85,6 +86,7 @@ function Products()
                 </div>
                 <div className="row mb-1">
                     <div className="col-md-8 mx-auto">
+                        <Suspense fallback={ <h2 className='text-danger fw-bold'> Datatable is loading... </h2> }>
                             <ReactDataTable
                             title={`Products`}
                             columns={columns}
@@ -96,6 +98,7 @@ function Products()
                             search={search}
                             setSearch={setSearch}
                             />
+                        </Suspense>
                     </div>
                 </div>
             </div>
